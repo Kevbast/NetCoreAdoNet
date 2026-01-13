@@ -79,12 +79,26 @@ namespace NetCoreAdoNet
             //EJECUTAMOS LA CONSULTA.COMO ES UN SELECT
             //UTILIZAMOS ExecuteReader() QUE DEVUELVE UN DataReader
             this.reader = this.com.ExecuteReader();
-            //LEEMOS LA PRIMERA COLUMNA DE LA CONSULTA
-            string columna = this.reader.GetName(0);//dame el nombre de la primera columna
-            //LEEMOS EL TIPO DE DATO DE LA PRIMERA COLUMNA
-            string tipo = this.reader.GetDataTypeName(0);
-            this.lstColumnas.Items.Add(columna);
-            this.lstTipos.Items.Add(tipo);
+            //PARA LA ESTRUCTURA DE LA TABLA SE UTILIZA for
+            for (int i = 0; i < this.reader.FieldCount; i++)
+            {
+                //metemos dentro los gets
+                //LEEMOS LA PRIMERA COLUMNA DE LA CONSULTA
+                string columna = this.reader.GetName(i);//dame el nombre de la primera columna
+                                                        //LEEMOS EL TIPO DE DATO DE LA PRIMERA COLUMNA
+                string tipo = this.reader.GetDataTypeName(i);
+                this.lstColumnas.Items.Add(columna);
+                this.lstTipos.Items.Add(tipo);
+            }
+
+            //DEBEMOS INDICAR EL METODO READ PARA LEER REGISTROS
+            while (this.reader.Read())
+            {             
+                //LEMOS EL PRIMER REGISTRO(APELLIDO)
+                string apellido = this.reader["APELLIDO"].ToString();
+                this.lstApellidos.Items.Add(apellido);
+            }
+
             //SIEMPRE DEBEMOS SALIR,CERRAR
             this.reader.Close();
         }
