@@ -49,11 +49,26 @@ namespace NetCoreAdoNet
         }
 
         private void btnEliminarEnfermo_Click(object sender, EventArgs e)
-        {
+        {//LOS PARAMETROS DEBEN SER DEL MISMO TIPO DE DATO QUE LA COLUMNA
+            int inscripcion = int.Parse(this.txtInscripcion.Text);
+
             //NCESITAMOS EL DATO DE INSCRIPCIÓN CONCATENADO
-            string inscripcion = this.txtInscripcion.Text;
-            string sql = "delete from ENFERMO where INSCRIPCION="+inscripcion;
-            //siempre lo mismo
+            //string inscripcion = this.txtInscripcion.Text;
+            string sql = "delete from ENFERMO where INSCRIPCION=@inscripcion";//+inscripcion;
+            //DEBEMOS CONFIGURAR UNO O VARIOS PARAMETROS
+            SqlParameter pamIns = new SqlParameter();
+            //EL NOMBRE DEL PARAMETRO DE LA CONSULTA NO PUEDE ESTAR REPETIDO
+            pamIns.ParameterName = "@inscripcion";
+            pamIns.DbType = DbType.Int32;
+            //POR DEFECTO LA DIRECCION ES INPUT
+            pamIns.Direction = ParameterDirection.Input;
+            //EL VALOR DEL PARAMETRO PARA SUSTITUIR LA CONSULTA
+            pamIns.Value = inscripcion;
+            //agregamos el parametro a la colección
+            this.com.Parameters.Add(pamIns);
+
+
+            //luego pasamos a hacer siempre lo mismo
             this.com.Connection = this.cn;
             this.com.CommandType = CommandType.Text;
             this.com.CommandText = sql;
@@ -61,6 +76,10 @@ namespace NetCoreAdoNet
             //LAS CONSULTAS DE ACCION DEVUELVEN UN int CON EL NUMER DE REGISTROS AFECTADOS
             int registros = this.com.ExecuteNonQuery();
             this.cn.Close();
+
+            //LIBERAMOS LOS PARAMETROS DE COLECCION
+            this.com.Parameters.Clear();
+
             this.LoadEnfermos();
             MessageBox.Show("ENFERMOS ELIMINADOS "+ registros);
         }
