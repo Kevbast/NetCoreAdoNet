@@ -19,10 +19,11 @@ namespace NetCoreAdoNet.Repositories
             this.com = new SqlCommand();
         }
         //como lo vamos a hacer asincrono las clases serán con TASK
+        //LA PRIMERA MAYUSCULA GetNombreDepartamentosAsync
         public async Task<List<string>> GetNombreDepartamentosAsync()
         {//METODO QUE NOS DEVUELVE UNA CONEXION
             string sql = "select distinct DNOMBRE from DEPT";
-            this.com.Connection = this.cn;
+            this.com.Connection = this.cn;//se podría meter dentro del constructor
             this.com.CommandType = CommandType.Text;
             this.com.CommandText = sql;
 
@@ -30,12 +31,13 @@ namespace NetCoreAdoNet.Repositories
             this.reader = await this.com.ExecuteReaderAsync();
             //CREAMOS UNA COLECCION PARA DEPT
             List<string> departamentos = new List<string>();
+
             while (await this.reader.ReadAsync())
             {
                 string nombre = this.reader["DNOMBRE"].ToString();
                 departamentos.Add(nombre);
             }
-
+            //NUNCA OLVIDARSE DE SALIR
             await this.reader.CloseAsync();
             await this.cn.CloseAsync();
             return departamentos;
@@ -43,8 +45,8 @@ namespace NetCoreAdoNet.Repositories
         }
 
         //CARGAMOS LOS EMPLEADOS DEL DEPARTAMENTO ESCOGIDO
-
-        public async Task<List<string>> getNombreEmpleadosPorNombreDeptAsync(string nombredept)
+        //LA PRIMERA MAYUSCULA GetNombreEmpleadosPorNombreDeptAsync
+        public async Task<List<string>> GetNombreEmpleadosPorNombreDeptAsync(string nombredept)
         {
             string sql = "select APELLIDO from EMP inner join DEPT on DEPT.DEPT_NO=EMP.DEPT_NO " +
                 "where DNOMBRE=@nombredept";
@@ -71,8 +73,8 @@ namespace NetCoreAdoNet.Repositories
             return empleados;
 
         }
-
-        public async Task<int> deleteEmpleadoDeptAsync(string nombreEmp)
+        //LA PRIMERA MAYUSCULA DeleteEmpleadoDeptAsync
+        public async Task<int> DeleteEmpleadoDeptAsync(string nombreEmp)
         {
             string sql = "delete from EMP where APELLIDO=@nombreEmp"; 
             SqlParameter pamName = new SqlParameter("@nombreEmp", nombreEmp);
